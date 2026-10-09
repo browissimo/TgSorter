@@ -15,6 +15,12 @@ enum class OpenMethod(val id: String, val title: String, val description: String
         "Telegram (tg://resolve)",
         "Ссылка адресуется напрямую установленному Telegram",
     ),
+    SEARCH(
+        "search",
+        "Поиск в Telegram",
+        "Telegram открывается на поиске с этим username — нажмите на найденный канал. " +
+            "Работает, даже когда ссылки не открываются",
+    ),
     TME_TELEGRAM(
         "tme_telegram",
         "Telegram (ссылка t.me)",
@@ -74,6 +80,17 @@ object TelegramLauncher {
                 client != null && start(context, view(webUri).setPackage(client)) -> Result.Opened
                 start(context, view(webUri)) -> Result.OpenedViaWebLink
                 else -> noApp()
+            }
+
+            // Поиск идёт другим запросом Telegram (contacts.search), а не resolveUsername,
+            // поэтому работает и тогда, когда Telegram не открывает ссылки на каналы.
+            OpenMethod.SEARCH -> {
+                val searchUri = Uri.parse("tg://search?query=$username")
+                when {
+                    client != null && start(context, view(searchUri).setPackage(client)) -> Result.Opened
+                    start(context, view(searchUri)) -> Result.Opened
+                    else -> noApp()
+                }
             }
 
             OpenMethod.TME_TELEGRAM -> when {
