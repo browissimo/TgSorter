@@ -7,7 +7,9 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.widget.Toast
+import com.tgsorter.app.TgSorterApp
 import com.tgsorter.app.data.io.SharedExport
+import com.tgsorter.app.telegram.OpenMethod
 import com.tgsorter.app.telegram.TelegramLauncher
 
 fun Context.toast(message: String, long: Boolean = false) {
@@ -26,10 +28,14 @@ fun Context.copyToClipboard(text: String, confirmation: String = "Скопиро
     }
 }
 
-/** Открывает канал в Telegram и показывает понятное сообщение при неудаче. */
-fun Context.openTelegramChannel(username: String) {
-    when (val result = TelegramLauncher.open(this, username)) {
-        TelegramLauncher.Result.OpenedInTelegram -> Unit
+/**
+ * Открывает канал выбранным в настройках способом и показывает понятное сообщение при неудаче.
+ * [method] по умолчанию берётся из настроек приложения.
+ */
+fun Context.openTelegramChannel(username: String, method: OpenMethod? = null) {
+    val chosen = method ?: (applicationContext as TgSorterApp).container.settings.openMethod.value
+    when (val result = TelegramLauncher.open(this, username, chosen)) {
+        TelegramLauncher.Result.Opened -> Unit
         TelegramLauncher.Result.OpenedViaWebLink ->
             toast("Telegram не найден — открываю ссылку t.me/$username")
         is TelegramLauncher.Result.Failed -> toast(result.message, long = true)

@@ -6,10 +6,20 @@
         Сеть нужна только самому Telegram, которому передаётся управление через Intent.
     -->
 
+    <!-- Видимость приложений (Android 11+): Telegram-клиенты, обработчики tg:// и https (браузеры) -->
     <queries>
+        <package android:name="org.telegram.messenger" />
+        <package android:name="org.telegram.messenger.web" />
+        <package android:name="org.telegram.messenger.beta" />
+        <package android:name="org.thunderdog.challegram" />
         <intent>
             <action android:name="android.intent.action.VIEW" />
             <data android:scheme="tg" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="https" />
         </intent>
     </queries>
 

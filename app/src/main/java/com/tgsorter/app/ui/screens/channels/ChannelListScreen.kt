@@ -64,6 +64,7 @@ import com.tgsorter.app.domain.model.Channel
 import com.tgsorter.app.domain.model.ChannelStatus
 import com.tgsorter.app.ui.components.CenteredMessage
 import com.tgsorter.app.ui.components.CenteredProgress
+import com.tgsorter.app.ui.components.OpenMethodDialog
 import com.tgsorter.app.ui.components.listTitle
 import com.tgsorter.app.ui.components.moveLabel
 import com.tgsorter.app.ui.components.rememberExportSaver
@@ -87,6 +88,7 @@ fun ChannelListScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     var query by rememberSaveable { mutableStateOf("") }
     var menuOpen by remember { mutableStateOf(false) }
+    var showOpenMethodDialog by rememberSaveable { mutableStateOf(false) }
     val status = viewModel.status
 
     LaunchedEffect(query) { viewModel.setQuery(query) }
@@ -166,6 +168,10 @@ fun ChannelListScreen(
                             DropdownMenuItem(
                                 text = { Text("Поделиться файлом") },
                                 onClick = { menuOpen = false; shareAll() },
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Как открывать каналы…") },
+                                onClick = { menuOpen = false; showOpenMethodDialog = true },
                             )
                         }
                     }
@@ -265,6 +271,10 @@ fun ChannelListScreen(
                 }
             }
         }
+    }
+
+    if (showOpenMethodDialog) {
+        OpenMethodDialog(onDismiss = { showOpenMethodDialog = false })
     }
 }
 

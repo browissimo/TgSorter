@@ -82,6 +82,7 @@ import com.tgsorter.app.domain.model.ReviewMode
 import com.tgsorter.app.domain.model.StatusCounts
 import com.tgsorter.app.ui.components.CenteredMessage
 import com.tgsorter.app.ui.components.CenteredProgress
+import com.tgsorter.app.ui.components.OpenMethodDialog
 import com.tgsorter.app.ui.components.StatLine
 import com.tgsorter.app.ui.components.StatusBadge
 import com.tgsorter.app.ui.components.containerColor
@@ -110,6 +111,7 @@ fun ReviewScreen(
     val haptics = LocalHapticFeedback.current
     var menuOpen by remember { mutableStateOf(false) }
     var showGoToDialog by rememberSaveable { mutableStateOf(false) }
+    var showOpenMethodDialog by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(viewModel) {
         viewModel.events.collect { event ->
@@ -160,6 +162,7 @@ fun ReviewScreen(
                             state = state,
                             onDismiss = { menuOpen = false },
                             onGoToNumber = { showGoToDialog = true },
+                            onOpenMethod = { showOpenMethodDialog = true },
                             onLastReviewed = viewModel::goToLastReviewed,
                             onFirstInQueue = viewModel::goToFirstInQueue,
                             onSwitchMode = viewModel::setMode,
@@ -200,6 +203,10 @@ fun ReviewScreen(
                 )
             }
         }
+    }
+
+    if (showOpenMethodDialog) {
+        OpenMethodDialog(onDismiss = { showOpenMethodDialog = false })
     }
 
     if (showGoToDialog) {
@@ -489,6 +496,7 @@ private fun ReviewMenu(
     state: ReviewUiState,
     onDismiss: () -> Unit,
     onGoToNumber: () -> Unit,
+    onOpenMethod: () -> Unit,
     onLastReviewed: () -> Unit,
     onFirstInQueue: () -> Unit,
     onSwitchMode: (ReviewMode) -> Unit,
@@ -530,6 +538,10 @@ private fun ReviewMenu(
             onClick = { onDismiss(); onResults() },
         )
         HorizontalDivider()
+        DropdownMenuItem(
+            text = { Text("Как открывать каналы…") },
+            onClick = { onDismiss(); onOpenMethod() },
+        )
         DropdownMenuItem(
             text = {
                 Column {

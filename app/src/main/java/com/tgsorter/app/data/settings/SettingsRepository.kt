@@ -1,6 +1,7 @@
 package com.tgsorter.app.data.settings
 
 import android.content.Context
+import com.tgsorter.app.telegram.OpenMethod
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,7 +24,18 @@ class SettingsRepository(context: Context) {
         _autoOpenNext.value = enabled
     }
 
+    private val _openMethod = MutableStateFlow(OpenMethod.fromId(prefs.getString(KEY_OPEN_METHOD, null)))
+
+    /** Способ открытия канала (tg://, t.me, выбор приложения, браузер). */
+    val openMethod: StateFlow<OpenMethod> = _openMethod.asStateFlow()
+
+    fun setOpenMethod(method: OpenMethod) {
+        prefs.edit().putString(KEY_OPEN_METHOD, method.id).apply()
+        _openMethod.value = method
+    }
+
     private companion object {
         const val KEY_AUTO_OPEN_NEXT = "auto_open_next"
+        const val KEY_OPEN_METHOD = "open_method"
     }
 }
